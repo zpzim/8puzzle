@@ -4,6 +4,7 @@
 #include "search_tree.h"
 using namespace std;
 
+int search_tree_node::_N_;
 
 //delete search tree when done
 search_tree_node::~search_tree_node(){
@@ -21,7 +22,7 @@ vector<search_tree_node*> search_tree_node::expand(MemFn heuristic){
 	int col = (blank_pos - 1) % _N_;
 	search_tree_node* c1 = new search_tree_node(blank_pos, puzzle_state, depth + 1);
 	search_tree_node* c2 = new search_tree_node(blank_pos, puzzle_state, depth + 1);
-	//If we are on a corner we only have 2 moves
+	//If we are on a corner we only have 2 moves	
 	//upper left
 	if(row == 0 && col == 0){
 		c1->swapPos(blank_pos, blank_pos + 1);
@@ -137,7 +138,7 @@ void search_tree_node::swapPos(int blank_spot, int p2){
 
 //Manhattan distance heuristic
 int search_tree_node::manhattan(){
-	int a, b, acol, bcol, arow, brow, x,y;
+	int a, b, acol, bcol, arow, brow;
 	int cost = 0;
 	for(auto item : puzzle_state){
 		a = item.first - 1;

@@ -4,7 +4,7 @@
 #include<vector>
 #include<unordered_map>
 
-const int _N_ = 3;
+
 using namespace std;
 
 class search_tree_node;
@@ -13,6 +13,7 @@ typedef  int (search_tree_node::*MemFn)();
 class search_tree_node
 {
 	private:
+		static int _N_;
 		int blank_pos;
 		int depth;
 		int current_cost;
@@ -36,6 +37,7 @@ class search_tree_node
 
 		//Mutators
 		vector<search_tree_node*> expand(MemFn heuristic);
+		static void setLW(int LW){ _N_ = LW; }
 
 		//operators
 		bool operator>=(const search_tree_node &other);

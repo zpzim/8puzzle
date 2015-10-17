@@ -13,5 +13,5 @@ search_tree.o: search_tree.cc
 	$(CC) $(CFLAGS) search_tree.cc
 
 clean:
-	rm *o puzzlesolver
+	rm *o *~ puzzlesolver
 
