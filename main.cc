@@ -27,6 +27,7 @@ int main(){
 	int N = 0;
 	int n = 0;
 	srand(time(0));
+	cout << "Select puzzle size (warning: 15-puzzle and 24-puzzle are very slow and will use a lot of memory, they may even run out of memory)." << endl;
 	cout << "1. 8-puzzle" << endl;
 	cout << "2. 15-puzzle" << endl;
 	cout << "3. 24-puzzle" << endl;
@@ -48,56 +49,115 @@ int main(){
 		break;
 	default:
 		cout << "invalid choice" << endl;
+		return 0;
+		break;
+	}
+	search_tree_node::setLW(N);
+	cout << "Select search heuristic." << endl;
+	cout << "1. Uniform Cost" << endl;
+	cout << "2. Misplaced Tile" << endl;
+	cout << "3. Manhattan Distance" << endl;
+	cout << "Enter a choice (1 - 3): " << endl;
+	choice = 0;
+	cin >> choice;
+	MemFn h;
+	switch(choice){
+	case 1:
+		h = &search_tree_node::uniform_cost;
+		break;
+	case 2:
+		h = &search_tree_node::misplaced_tile;
+		break;
+	case 3:
+		h = &search_tree_node::manhattan;
+		break;
+	default:
+		cout << "invalid choice" << endl;
+		return 0;
 		break;
 	}
 	unordered_map<int, int> pstate;
 	int elementCount = 1;
 	int item = 0;
 	int bpos = 0;
-	for(int i = 0; i < N; ++i){
-		cout << "Please enter row " << i + 1 << " of the start state of the puzzle (" << N << ") elements." << endl;
-		for(int j = 1; j <= N; ++j){
-			cin >> item;
-			if(item == n){
-				bpos = elementCount;
+
+	cout << "Select puzzle input type." << endl;
+	cout << "1. User Selects" << endl;
+	cout << "2. Random" << endl;
+	cout << "Enter a choice (1 - 2): " << endl;
+	choice = 0;
+	cin >> choice;
+	bool userInput = false;
+	switch(choice){
+	case 1:
+		userInput = true;
+		break;
+	case 2:
+		userInput = false;
+		break;
+	default:
+		cout << "invalid choice" << endl;
+		return 0;
+		break;
+	}
+	if(userInput){
+		bool valid = false;
+		while(!valid){
+			pstate = unordered_map<int,int>();
+			bpos = 0;
+			item = 0;
+			elementCount = 1;
+			for(int i = 0; i < N; ++i){
+				cout << "Please enter row " << i + 1 << " of the start state of the puzzle (" << N << ") elements." << endl;
+				for(int j = 1; j <= N; ++j){
+					cin >> item;
+					if(item == n){
+						bpos = elementCount;
+					}
+		 			pstate.insert(make_pair(elementCount, item));
+					++elementCount;
+				}
 			}
- 			pstate.insert(make_pair(elementCount, item));
-			++elementCount;
+			search_tree_node test(bpos, pstate, 0);
+			valid = test.isSolvable();
+			if(!valid){
+				cout << "The puzzle you entered is not solvable, please enter a new puzzle." << endl;
+			}
 		}
+	}else{
+		cout << "Generating solvable puzzle... " << endl;
+		vector<int> positions(n);
+		for(int i = 0; i < n; ++i){
+			positions.at(i) = i + 1;
+		}
+		bool valid = false;
+		while(!valid){
+			bpos = 0;
+			pstate = unordered_map<int,int>();
+			vector<int> p = positions;
+			for(int i = 1; i <= n; ++i){
+				int pos = rand() % p.size();
+				if(p[pos] == n){
+					bpos = i;
+				}
+				pstate.insert(make_pair(i, p[pos]));
+				p.erase(p.begin() + pos);
+			}
+			search_tree_node test(bpos, pstate, 0);
+			valid = test.isSolvable();
+			
+		}
+
+
+
 	}
 	
-	/*
-	pstate.insert(make_pair(1,16));
-	pstate.insert(make_pair(2,15));
-	pstate.insert(make_pair(3,14));
-	pstate.insert(make_pair(4,13));
-	pstate.insert(make_pair(5,12));
-	pstate.insert(make_pair(6,11));
-	pstate.insert(make_pair(7,10));
-	pstate.insert(make_pair(8,9));
-	pstate.insert(make_pair(9,8));
-	pstate.insert(make_pair(10,7));
-	pstate.insert(make_pair(11,6));
-	pstate.insert(make_pair(12,5));
-	pstate.insert(make_pair(13,4));
-	pstate.insert(make_pair(14,3));
-	pstate.insert(make_pair(15,2));
-	pstate.insert(make_pair(16,1));
-	//pstate.insert(make_pair(1,8));
-	//pstate.insert(make_pair(2,6));
-	//pstate.insert(make_pair(3,7));
-	//pstate.insert(make_pair(4,2));
-	//pstate.insert(make_pair(5,5));
-	//pstate.insert(make_pair(6,4));
-	//pstate.insert(make_pair(7,3));
-	//pstate.insert(make_pair(8,9));
-	//pstate.insert(make_pair(9,1));
-	*/
-	search_tree_node::setLW(N);
-	cout << bpos << endl;
+	//cout << bpos << endl;
 	search_tree_node* root = new search_tree_node(bpos, pstate, 0);
-	
-	if(/*iterativeDeepeningAStar(root, 10 )*/ AStar(root, &search_tree_node::manhattan)){
+	cout << "solving the following puzzle with A* and the provided heuristic..." << endl;
+	root -> print_state();
+	cout << "Entering a*" << endl;
+	if(/*iterativeDeepeningAStar(root, 10 )*/ AStar(root, h)){
 		cout << "Success" << endl;
 	}else{
 		cout << "Failure" << endl;

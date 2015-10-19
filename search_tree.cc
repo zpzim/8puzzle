@@ -1,6 +1,6 @@
 
 #include<iostream>
-
+#include<set>
 #include "search_tree.h"
 using namespace std;
 
@@ -161,7 +161,7 @@ int search_tree_node::misplaced_tile(){
 			count++;
 		}
 	}
-	return 0;
+	return count;
 }
 
 bool search_tree_node::operator>=(const search_tree_node &other){
@@ -181,6 +181,45 @@ bool search_tree_node::isSolved(){
 		}
 	}
 	return true;
+
+}
+
+bool search_tree_node::isSolvable(){
+	int n = _N_ * _N_;	
+	set<int> found;
+	int inversions = 0;
+	for(auto i : puzzle_state){
+		if(i.first == blank_pos){
+			continue;
+		}
+		int preceeded = i.second;
+		for(int j = 0; j < i.second; ++j){
+			if(found.count(j) != 0){
+				preceeded--;
+			}
+		}
+		inversions += preceeded;
+		found.insert(i.second);	
+	}
+	if( _N_ % 2){
+		if(inversions % 2 == 1){
+			return false;
+		}
+		return true;
+	}
+	else{
+		if(inversions % 2 == 1){
+			if((_N_ - blank_pos / _N_) % 2 == 0){
+				return true;
+			}
+			return false;
+		}else{
+			if((_N_ - blank_pos / _N_) % 2 == 1){
+				return true;
+			}
+			return false;
+		}
+	}
 
 }
 

@@ -34,6 +34,7 @@ class search_tree_node
 		int getDepth() {return depth;}
 		int getCost() {return current_cost;}
 		bool isSolved();
+		bool isSolvable();
 
 		//Mutators
 		vector<search_tree_node*> expand(MemFn heuristic);
