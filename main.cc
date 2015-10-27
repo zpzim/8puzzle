@@ -54,9 +54,9 @@ int main(){
 	}
 	search_tree_node::setLW(N);
 	cout << "Select search heuristic." << endl;
-	cout << "1. Uniform Cost" << endl;
-	cout << "2. Misplaced Tile" << endl;
-	cout << "3. Manhattan Distance" << endl;
+	cout << "1. Uniform Cost(very slow, may run out of memory)" << endl;
+	cout << "2. Misplaced Tile(slow, may run out of memory)" << endl;
+	cout << "3. Manhattan Distance(fast)" << endl;
 	cout << "Enter a choice (1 - 3): " << endl;
 	choice = 0;
 	cin >> choice;
@@ -162,7 +162,7 @@ int main(){
 	}else{
 		cout << "Failure" << endl;
 	}
-	delete root;
+	//delete root;
 	return 0;
 }
 /*
@@ -177,10 +177,13 @@ bool iterativeDeepeningAStar(search_tree_node* root, int k){
 */
 
 bool AStar(search_tree_node* root, MemFn heuristic){//, int k){
-	int expanded = 0;
+	long long expanded = 0;
+	long long totalNodesGenerated = 1;
 	//unordered_set<search_tree_node*, hash<search_tree_node*>, Comp2> visited;
 	priority_queue<search_tree_node*, vector<search_tree_node*>, Comp> nodes;
 	nodes.push(root);
+	long long maxQueueLength = 1;
+	
 	while(!nodes.empty()){
 		//cout << expanded << endl;
 		search_tree_node* curr = nodes.top();
@@ -190,12 +193,14 @@ bool AStar(search_tree_node* root, MemFn heuristic){//, int k){
 		if (curr -> isSolved()){
 			curr -> print_state();
 			cout << "Number of expanded nodes = " << expanded << endl;
-			//cout << "Number of repeat states = " << repeat << endl;
+			cout << "Total nodes generated = " << totalNodesGenerated << endl;
+			cout << "Max queue length = " << maxQueueLength << endl;
 			cout << "Solution depth = " << curr -> getDepth() << endl;
 			return true;
 		}
 		vector<search_tree_node*> children = curr->expand(heuristic);
 		expanded++;
+		totalNodesGenerated += children.size();
 		for(auto item : children){
 			//if(visited.count(item) == 0){
 			//	visited.insert(item);
@@ -204,6 +209,10 @@ bool AStar(search_tree_node* root, MemFn heuristic){//, int k){
 			//	repeat++;
 			//}
 		}
+		if(nodes.size() > maxQueueLength){
+			maxQueueLength = nodes.size();
+		}
+		delete curr;
 	}
 	return false;
 		

@@ -8,9 +8,9 @@ int search_tree_node::_N_;
 
 //delete search tree when done
 search_tree_node::~search_tree_node(){
-		for(auto i : children){
-			delete i;
-		}
+		//for(auto i : children){
+		//	delete i;
+		//}
 
 }
 
