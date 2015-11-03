@@ -222,7 +222,6 @@ bool search_tree_node::isSolvable(){
 	}
 
 }
-
 //Prints the puzzle state
 void search_tree_node::print_state(){
 	int n = _N_ * _N_;
@@ -230,7 +229,11 @@ void search_tree_node::print_state(){
 		if(i % _N_== 1){
 			cout << endl;
 		}
-		cout << puzzle_state.at(i) << " ";
+		if(puzzle_state.at(i) != n){
+			cout << puzzle_state.at(i) << " ";
+		}else{
+			cout << "  ";
+		}
 		
 	}
 	cout << endl;

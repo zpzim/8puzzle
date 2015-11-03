@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-c -Wall -std=c++11
+CFLAGS=-O3 -c -Wall -std=c++11
 
 all: puzzlesolver
 
